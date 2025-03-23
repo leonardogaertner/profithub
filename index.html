@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Rentabilidade</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h2>Escolha uma opção</h2>
+    </div>
+
+    <div class="button-group">
+        <button id="btnCalcular" class="btn btn-primary">Calcular Rentabilidade</button>
+        <button id="btnComparar" class="btn btn-success">Comparar Rentabilidade</button>
+    </div>
+
+    <div id="calcularSection" class="content-section">
+        <h3>Calcular Rentabilidade</h3>
+        <div class="form-group">
+            <label>Valor Investido (R$)</label>
+            <input type="number" id="valorInvestido" placeholder="Digite o valor">
+        </div>
+        <div class="form-group">
+            <label>Taxa de Rentabilidade</label>
+            <select id="tipoTaxa" onchange="toggleCDI('calcular')">
+                <option value="fixa">Taxa Fixa (%)</option>
+                <option value="cdi">CDI (%)</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label>Taxa (%)</label>
+            <input type="number" id="taxa" placeholder="Digite a taxa">
+        </div>
+        <div class="form-group hidden" id="cdiGroupCalcular">
+            <label>CDI Atual (%)</label>
+            <input type="number" id="cdiAtual" placeholder="Digite o CDI atual">
+        </div>
+        <div class="form-group">
+            <label>Tempo Investido (anos)</label>
+            <input type="number" id="tempo" placeholder="Digite o tempo">
+        </div>
+        <div class="form-group">
+            <label>Incidência de IR (%)</label>
+            <input type="number" id="ir" placeholder="Digite a taxa de IR">
+        </div>
+        <button class="btn btn-primary btn-calcular" onclick="calcularRentabilidade()">Calcular</button>
+        <div id="resultadoCalculo" class="hidden"></div>
+    </div>
+
+    <div id="compararSection" class="content-section hidden">
+        <h3>Comparar Rentabilidades</h3>
+        <div id="investimentos">
+            <div class="investimento">
+                <h4>Investimento 1</h4>
+                <div class="form-group">
+                    <label>Valor Investido (R$)</label>
+                    <input type="number" id="valor1">
+                </div>
+                <div class="form-group">
+                    <label>Taxa de Rentabilidade</label>
+                    <select id="tipoTaxa1" onchange="toggleCDI('comparar', 1)">
+                        <option value="fixa">Taxa Fixa (%)</option>
+                        <option value="cdi">CDI (%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Taxa (%)</label>
+                    <input type="number" id="taxa1">
+                </div>
+                <div class="form-group hidden" id="cdiGroup1">
+                    <label>CDI Atual (%)</label>
+                    <input type="number" id="cdiAtual1">
+                </div>
+                <div class="form-group">
+                    <label>Tempo Investido (anos)</label>
+                    <input type="number" id="tempo1">
+                </div>
+                <div class="form-group">
+                    <label>Incidência de IR (%)</label>
+                    <input type="number" id="ir1">
+                </div>
+            </div>
+            <div class="investimento">
+                <h4>Investimento 2</h4>
+                <div class="form-group">
+                    <label>Valor Investido (R$)</label>
+                    <input type="number" id="valor2">
+                </div>
+                <div class="form-group">
+                    <label>Taxa de Rentabilidade</label>
+                    <select id="tipoTaxa2" onchange="toggleCDI('comparar', 2)">
+                        <option value="fixa">Taxa Fixa (%)</option>
+                        <option value="cdi">CDI (%)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Taxa (%)</label>
+                    <input type="number" id="taxa2">
+                </div>
+                <div class="form-group hidden" id="cdiGroup2">
+                    <label>CDI Atual (%)</label>
+                    <input type="number" id="cdiAtual2">
+                </div>
+                <div class="form-group">
+                    <label>Tempo Investido (anos)</label>
+                    <input type="number" id="tempo2">
+                </div>
+                <div class="form-group">
+                    <label>Incidência de IR (%)</label>
+                    <input type="number" id="ir2">
+                </div>
+            </div>
+        </div>
+        <button class="btn btn-success btn-comparar" onclick="compararRentabilidade()">Comparar</button>
+        <div id="resultadoComparacao" class="hidden"></div>
+    </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
