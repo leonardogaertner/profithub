@@ -1,55 +1,46 @@
-body {
+mbody {
     font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
+    background-color: beige;
     margin: 0;
     padding: 20px;
 }
 
+body{
+    background-color: navy;
+    color: olivedrab;
+}
+
+nav{
+    background-color: beige;
+    max-height: 100px;
+    margin-bottom: 15px;
+    padding: 10px;
+    justify-items: center;
+}
+
+
 .container {
     max-width: 600px;
     margin: auto;
-    background: white;
+    background: beige;
     padding: 20px;
     border-radius: 8px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
 }
 
-.header {
-    text-align: center;
-    background: #28a745;
-    color: white;
-    padding: 15px;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 5px;
-    margin-bottom: 15px;
-}
-
 .button-group {
     display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.button-group button {
-    flex: 1;
-    margin: 5px;
-    padding: 10px;
-    font-size: 16px;
-    background: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    justify-content: space-around;
+    align-items: center;
 }
 
 .button-group button:hover {
-    background: #218838;
+    background: olive;
 }
 
 .content-section {
     padding: 15px;
-    background: #f1f1f1;
+    background: beige;
     border-radius: 5px;
     margin-top: 10px;
 }
@@ -71,7 +62,7 @@ label {
 input, select {
     width: 100%;
     padding: 8px;
-    border: 1px solid #ccc;
+    border: 1px solid olivedrab;
     border-radius: 4px;
 }
 
@@ -79,28 +70,28 @@ button {
     width: 100%;
     padding: 10px;
     font-size: 16px;
-    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     margin-top: 10px;
 }
-
-.btn-calcular {
-    background: #007bff;
+.content-section{
+    background-color: beige;
 }
 
-.btn-calcular:hover {
-    background: #0056b3;
+.btn-calcular, .btn-comparar {
+    background: olivedrab;
 }
 
-.btn-comparar {
-    background: #28a745;
+#btnCalcular:hover, #btnComparar:hover, #btnSecondary:hover {
+    color: black;
 }
 
-.btn-comparar:hover {
-    background: #218838;
+#btnComparar, #btnCalcular{
+    color: olivedrab;
 }
+
+
 
 /* Estilo para comparação */
 #investimentos {
@@ -112,7 +103,51 @@ button {
 .investimento {
     flex: 1;
     padding: 10px;
-    background: white;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    background: beige;
+}
+
+/* Custom Modal Styling */
+.modal-content {
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    background-color: olivedrab;
+    color: beige;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+    justify-content: center;
+}
+
+.modal-title {
+    font-weight: bold;
+}
+
+.modal-body {
+    padding: 20px;
+}
+
+.modal-body .row {
+    margin-bottom: 20px;
+}
+
+.modal-body .col-md-6 {
+    border-right: 1px solid #ccc;
+    padding: 10px;
+}
+
+.modal-body .col-md-6:last-child {
+    border-right: none;
+}
+
+.modal-footer {
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+
+.btn-secondary{
+    color: white;
+    background-color: olivedrab;
 }

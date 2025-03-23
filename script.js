@@ -37,13 +37,20 @@ function calcularRentabilidade() {
     })
     .then(response => response.json())
     .then(data => {
-        document.getElementById("resultadoCalculo").innerHTML = `
-            <p><strong>Montante Bruto:</strong> R$ ${data.montante_bruto.toFixed(2)}</p>
-            <p><strong>Lucro Bruto:</strong> R$ ${data.lucro_bruto.toFixed(2)}</p>
-            <p><strong>Imposto de Renda:</strong> R$ ${data.ir.toFixed(2)}</p>
-            <p><strong>Montante Líquido:</strong> R$ ${data.montante_liquido.toFixed(2)}</p>
+        const modalBody = document.getElementById("modalBody");
+        modalBody.innerHTML = `
+            <div class="row">
+                <div class="col-md-12">
+                    <p><strong>Montante Bruto:</strong> R$ ${data.montante_bruto.toFixed(2)}</p>
+                    <p><strong>Lucro Bruto:</strong> R$ ${data.lucro_bruto.toFixed(2)}</p>
+                    <p><strong>Imposto de Renda:</strong> R$ ${data.ir.toFixed(2)}</p>
+                    <p><strong>Montante Líquido:</strong> R$ ${data.montante_liquido.toFixed(2)}</p>
+                </div>
+            </div>
         `;
-        document.getElementById("resultadoCalculo").classList.remove("hidden");
+        // Show the modal
+        const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+        resultModal.show();
     })
     .catch(error => {
         console.error("Erro ao calcular rentabilidade:", error);
@@ -75,19 +82,24 @@ function compararRentabilidade() {
     })
     .then(response => response.json())
     .then(data => {
-        let resultado = "<h3>Resultados:</h3>";
+        let resultado = `<div class="row">`;
         data.resultados.forEach((invest, index) => {
             resultado += `
-                <p><strong>Investimento ${index + 1}:</strong></p>
-                <p>Montante Bruto: R$ ${invest.montante_bruto.toFixed(2)}</p>
-                <p>Lucro Bruto: R$ ${invest.lucro_bruto.toFixed(2)}</p>
-                <p>Imposto de Renda: R$ ${invest.ir.toFixed(2)}</p>
-                <p>Montante Líquido: R$ ${invest.montante_liquido.toFixed(2)}</p>
-                <hr>
+                <div class="col-md-6">
+                    <h4>Investimento ${index + 1}</h4>
+                    <p><strong>Montante Bruto:</strong> R$ ${invest.montante_bruto.toFixed(2)}</p>
+                    <p><strong>Lucro Bruto:</strong> R$ ${invest.lucro_bruto.toFixed(2)}</p>
+                    <p><strong>Imposto de Renda:</strong> R$ ${invest.ir.toFixed(2)}</p>
+                    <p><strong>Montante Líquido:</strong> R$ ${invest.montante_liquido.toFixed(2)}</p>
+                </div>
             `;
         });
-        document.getElementById("resultadoComparacao").innerHTML = resultado;
-        document.getElementById("resultadoComparacao").classList.remove("hidden");
+        resultado += `</div>`;
+        const modalBody = document.getElementById("modalBody");
+        modalBody.innerHTML = resultado;
+        // Show the modal
+        const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
+        resultModal.show();
     })
     .catch(error => {
         console.error("Erro ao comparar rentabilidades:", error);
