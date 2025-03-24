@@ -40,7 +40,7 @@ git clone https://github.com/your-username/your-repo-name.git
 cd your-repo-name
 ```
 
-## 2. Set Up the Backend
+## 2. Set Up the Project
 1. Install the required Python packages:
 
 ```
@@ -48,46 +48,31 @@ pip install flask flask-cors
 ```
 This will install Flask (for the backend) and Flask-CORS (to handle cross-origin requests).
 
-2. Run the Flask server:
+2. Run the Main file:
 
 ```
-python app.py
-```
-The backend will start running at http://127.0.0.1:5000.
-
-## 3. Set Up the Frontend
-### Using VS Code Live Server:
-
-1. Open the project in Visual Studio Code.
-
-2. Install the "Live Server" extension if you don't have it already.
-
-3. Right-click on index.html and select "Open with Live Server."
-
-### Using Python's Built-in HTTP Server:
-
-1. Open a terminal in the project directory.
-
-2. Run the following command:
-
-```
-python -m http.server 8000
+python main.py
 ```
 
-3. Open your browser and navigate to http://localhost:8000
+The project will now start running at http://127.0.0.1:5000. Just visit the URL and everything should be working!
 
-## 4. Project Structure
+## 3. Project Structure
 
 ```
 your-repo-name/
-├── index.html          # Frontend HTML file
-├── style.css           # Frontend CSS file
-├── script.js           # Frontend JavaScript file
-├── app.py              # Backend Flask application
-├── README.md           # This README file
+├── static/
+│   ├── css/
+│   │   └── style.css
+│   └── js/
+│       └── script.js
+├── templates/
+│   └── index.html
+├── main.py
+├── views.py
+└── README.md
 ```
 
-## 5. API Endpoints
+## 4. API Endpoints
 
 ### POST /calcular 
 Calculate the profitability of a single investment.
@@ -161,6 +146,11 @@ Calculate the profitability of a single investment.
 Contact
 If you have any questions or feedback, feel free to reach out:
 
-Email: leonardo.gaertner@edu.udesc.br
+Emails: 
+leonardo.gaertner@edu.udesc.br
+fernando.prim@edu.udesc.br
+kevin.strey@edu.udesc.br
 
-GitHub: leonardogaertner
+GitHubs: 
+leonardogaertner
+fernandoprim

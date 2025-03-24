@@ -1,3 +1,35 @@
+//Função pra buscar o CDI atual pela API do BC.
+document.addEventListener('DOMContentLoaded', function() {
+    fetchCDIAtual();
+});
+
+function fetchCDIAtual() {
+    const url = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json';
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            const ultimoCDI = data[data.length - 1];
+            const valorCDI = parseFloat(ultimoCDI.valor);
+            
+            const cdiInput = document.getElementById('cdiAtual');
+            if (cdiInput) {
+                cdiInput.value = valorCDI.toFixed(2);
+            }
+            const cdiInput1 = document.getElementById('cdiAtual1');
+            if (cdiInput1) {
+                cdiInput1.value = valorCDI.toFixed(2);
+            }
+            const cdiInput2 = document.getElementById('cdiAtual2');
+            if (cdiInput2) {
+                cdiInput2.value = valorCDI.toFixed(2);
+            }
+        })
+        .catch(error => {
+            console.error('Erro ao buscar CDI:', error);
+        });
+}
+
 // Exibir a seção escolhida
 function showSection(section) {
     document.getElementById("calcularSection").classList.add("hidden");
@@ -9,16 +41,20 @@ function showSection(section) {
 function toggleCDI(section, index = null) {
     let tipo;
     let cdiGroup;
+    let taxaGroup;
 
     if (section === "calcular") {
         tipo = document.getElementById("tipoTaxa").value;
         cdiGroup = document.getElementById("cdiGroupCalcular");
+        taxaGroup = document.getElementById("taxaGroupCalcular");
     } else if (section === "comparar") {
         tipo = document.getElementById(`tipoTaxa${index}`).value;
         cdiGroup = document.getElementById(`cdiGroup${index}`);
+        taxaGroup = document.getElementById(`taxaGroup${index}`);
     }
 
     cdiGroup.classList.toggle("hidden", tipo !== "cdi");
+    taxaGroup.classList.toggle("hidden", tipo !== "fixa")
 }
 
 // Calcular Rentabilidade

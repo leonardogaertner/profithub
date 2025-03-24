@@ -1,12 +1,13 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+from flask import Flask, request, jsonify, render_template
+from main import app
 
-app = Flask(__name__)
-CORS(app)
+@app.route('/')
+def index():
+    return render_template('index.html')
 
 def calcular_rentabilidade(valor, taxa, tempo, ir, cdi=None):
     if cdi:
-        taxa = (taxa / 100) * (cdi / 100)
+        taxa = cdi/100
     else:
         taxa /= 100
     
@@ -47,6 +48,3 @@ def comparar():
         })
 
     return jsonify({"resultados": resultados})
-
-if __name__ == '__main__':
-    app.run(debug=True)
