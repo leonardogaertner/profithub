@@ -32,12 +32,12 @@ Before running the application, ensure you have the following installed:
 2. Run the following command to clone the repository:
 
 ```
-git clone https://github.com/your-username/your-repo-name.git
+git clone https://github.com/leonardogaertner/profithub
 ```
 
 3. Navigate to the project directory:
 ```
-cd your-repo-name
+cd profithub
 ```
 
 ## 2. Set Up the Project
