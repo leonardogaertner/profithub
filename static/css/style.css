@@ -64,6 +64,13 @@ nav {
     margin-bottom: 1.5rem;
 }
 
+.data-section{
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--light-gray);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
 .result-section {
     flex: 1;
 }
@@ -103,6 +110,19 @@ nav {
 
 .form-group {
     margin-bottom: 1.5rem;
+    white-space: nowrap;
+}
+
+.checkbox-container {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 10px 0 0;
+}
+
+.checkbox-label {
+    color: black;
+    margin-left: 5px;
+    width: 100px;
 }
 
 label {

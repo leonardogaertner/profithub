@@ -48,6 +48,7 @@ function fetchCDIAtual() {
     const url = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json';
 
     fetch(url)
+    
         .then(response => response.json())
         .then(data => {
             const ultimoCDI = data[data.length - 1];
