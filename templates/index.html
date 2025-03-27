@@ -10,7 +10,6 @@
 </head>
 
 <body>
-<!-- Substitua a parte do navbar por: -->
 <nav class="navbar navbar-expand-lg">
     <div class="container-fluid justify-content-center">
         <div class="navbar-nav">
@@ -22,134 +21,192 @@
 
     <div class="container">
         <div id="calcularSection" class="content-section">
-            <div class="form-group">
-                <label>Valor Investido (R$)</label>
-                <input type="number" id="valorInvestido" placeholder="Digite o valor">
-            </div>
-            <div class="form-group">
-                <label>Taxa de Rentabilidade</label>
-                <select id="tipoTaxa" onchange="toggleCDI('calcular')">
-                    <option value="fixa">Taxa Fixa (%)</option>
-                    <option value="cdi">CDI (%)</option>
-                </select>
-            </div>
-            <div class="form-group" id="taxaGroupCalcular">
-                <label>Taxa (%)</label>
-                <input type="number" id="taxa" placeholder="Digite a taxa">
-            </div>
-            <div class="form-group hidden" id="cdiGroupCalcular">
-                <label>CDI Atual (%)</label>
-                <input type="number" id="cdiAtual" name="cdiAtual" placeholder="CDI atual" step="0.01" disabled>
-            </div>
+            <div class="form-container">
+                <div class="form-section">
+                    <h3 class="section-title">Dados do Investimento</h3>
+                    <div class="form-group">
+                        <label>Valor Investido (R$)</label>
+                        <input type="number" id="valorInvestido" placeholder="Digite o valor" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Taxa de Rentabilidade</label>
+                        <select id="tipoTaxa" onchange="toggleCDI('calcular')">
+                            <option value="fixa">Taxa Fixa (%)</option>
+                            <option value="cdi">CDI (%)</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="taxaGroupCalcular">
+                        <label>Taxa (%)</label>
+                        <input type="number" id="taxa" placeholder="Digite a taxa" min="0">
+                    </div>
+                    <div class="form-group hidden" id="cdiGroupCalcular">
+                        <label>CDI Atual (%)</label>
+                        <input type="number" id="cdiAtual" name="cdiAtual" placeholder="CDI atual" step="0.01" disabled min="0">
+                    </div>
 
-            <div class="form-group hidden" id="rendimentoGroupCalcular">
-                <label>Percentual de Rendimento do CDI (%)</label>
-                <input type="number" id="percentualRendimento" name="percentualRendimento" 
-                       placeholder="% Rendimento CDI" step="0.01">
-            </div>
+                    <div class="form-group hidden" id="rendimentoGroupCalcular">
+                        <label>Percentual de Rendimento do CDI (%)</label>
+                        <input type="number" id="percentualRendimento" name="percentualRendimento" 
+                            placeholder="% Rendimento CDI" step="0.01" min="0">
+                    </div>
 
-            <div class="form-group">
-                <label>Tempo Investido (anos)</label>
-                <input type="number" id="tempo" placeholder="Digite o tempo">
+                    <div class="form-group">
+                        <label>Tempo Investido</label>
+                        <div class="input-group">
+                            <input type="number" id="tempo" placeholder="Digite o tempo" class="form-control" min="0">
+                            <select id="periodo" class="form-control" style="max-width: 100px;">
+                                <option value="anos">Anos</option>
+                                <option value="meses">Meses</option>
+                                <option value="dias">Dias</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Incidência de IR (%)</label>
+                        <input type="number" id="ir" placeholder="Digite a taxa de IR" min="0" max="100">
+                    </div>
+                </div>
+
+                <div class="result-section">
+                    <h3 class="section-title">Resultado</h3>
+                    <div class="result-card">
+                        <div class="result-item">
+                            <span class="result-label">Valor Investido:</span>
+                            <span class="result-value" id="resValorInvestido">R$ 0.00</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Rendimento Bruto:</span>
+                            <span class="result-value" id="resRendimentoBruto">R$ 0.00</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Rendimento Líquido:</span>
+                            <span class="result-value" id="resRendimentoLiquido">R$ 0.00</span>
+                        </div>
+                        <div class="result-item">
+                            <span class="result-label">Valor Total Líquido:</span>
+                            <span class="result-value" id="resValorTotal">R$ 0.00</span>
+                        </div>
+                        <div class="result-item highlight">
+                            <span class="result-label">Rentabilidade:</span>
+                            <span class="result-value" id="resRentabilidade">0%</span>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label>Incidência de IR (%)</label>
-                <input type="number" id="ir" placeholder="Digite a taxa de IR">
-            </div>
-            <button class="btn btn-primary btn-calcular" onclick="calcularRentabilidade()">Calcular</button>
-            <div id="resultadoCalculo" class="hidden"></div>
         </div>
 
         <div id="compararSection" class="content-section hidden">
-            <div id="investimentos">
-                <div class="investimento">
-                    <h4>Investimento 1</h4>
-                    <div class="form-group">
-                        <label>Valor Investido (R$)</label>
-                        <input type="number" id="valor1">
-                    </div>
-                    <div class="form-group">
-                        <label>Taxa de Rentabilidade</label>
-                        <select id="tipoTaxa1" onchange="toggleCDI('comparar', 1)">
-                            <option value="fixa">Taxa Fixa (%)</option>
-                            <option value="cdi">CDI (%)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="taxaGroup1">
-                        <label>Taxa (%)</label>
-                        <input type="number" id="taxa1">
-                    </div>
-                    <div class="form-group hidden" id="cdiGroup1">
-                        <label>CDI Atual (%)</label>
-                        <input type="number" id="cdiAtual1" disabled>
-                    </div>
+            <div class="form-section">
+                <h3 class="section-title">Dados do Investimento</h3>
+                <div id="investimentos">
+                    <div class="investimento">
+                        <h4>Investimento 1</h4>
+                        <div class="form-group">
+                            <label>Valor Investido (R$)</label>
+                            <input type="number" id="valor1" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Taxa de Rentabilidade</label>
+                            <select id="tipoTaxa1" onchange="toggleCDI('comparar', 1)">
+                                <option value="fixa">Taxa Fixa (%)</option>
+                                <option value="cdi">CDI (%)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="taxaGroup1">
+                            <label>Taxa (%)</label>
+                            <input type="number" id="taxa1" min="0">
+                        </div>
+                        <div class="form-group hidden" id="cdiGroup1">
+                            <label>CDI Atual (%)</label>
+                            <input type="number" id="cdiAtual1" disabled min="0">
+                        </div>
 
-                    <div class="form-group hidden" id="rendimentoGroupCalcular1">
-                        <label>Percentual de Rendimento do CDI (%)</label>
-                        <input type="number" id="percentualRendimento1" name="percentualRendimento" 
-                               placeholder="% Rendimento CDI" step="0.01">
-                    </div>
+                        <div class="form-group hidden" id="rendimentoGroupCalcular1">
+                            <label>Percentual de Rendimento do CDI (%)</label>
+                            <input type="number" id="percentualRendimento1" name="percentualRendimento" 
+                                placeholder="% Rendimento CDI" step="0.01" min="0">
+                        </div>
 
-                    <div class="form-group">
-                        <label>Tempo Investido (anos)</label>
-                        <input type="number" id="tempo1">
+                        <div class="form-group">
+                            <label>Tempo Investido</label>
+                            <div class="input-group">
+                                <input type="number" id="tempo1" placeholder="Digite o tempo" class="form-control" min="0">
+                                <select id="periodo1" class="form-control" style="max-width: 100px;">
+                                    <option value="anos">Anos</option>
+                                    <option value="meses">Meses</option>
+                                    <option value="dias">Dias</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Incidência de IR (%)</label>
+                            <input type="number" id="ir1" min="0" max="100">
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label>Incidência de IR (%)</label>
-                        <input type="number" id="ir1">
+                    <div class="investimento">
+                        <h4>Investimento 2</h4>
+                        <div class="form-group">
+                            <label>Valor Investido (R$)</label>
+                            <input type="number" id="valor2" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Taxa de Rentabilidade</label>
+                            <select id="tipoTaxa2" onchange="toggleCDI('comparar', 2)">
+                                <option value="fixa">Taxa Fixa (%)</option>
+                                <option value="cdi">CDI (%)</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="taxaGroup2">
+                            <label>Taxa (%)</label>
+                            <input type="number" id="taxa2" min="0">
+                        </div>
+                        <div class="form-group hidden" id="cdiGroup2">
+                            <label>CDI Atual (%)</label>
+                            <input type="number" id="cdiAtual2" disabled min="0">
+                        </div>
+                        <div class="form-group hidden" id="rendimentoGroupCalcular2">
+                            <label>Percentual de Rendimento do CDI (%)</label>
+                            <input type="number" id="percentualRendimento2" name="percentualRendimento" placeholder="% Rendimento CDI" step="10" min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Tempo Investido</label>
+                            <div class="input-group">
+                                <input type="number" id="tempo2" placeholder="Digite o tempo" class="form-control" min="0">
+                                <select id="periodo2" class="form-control" style="max-width: 100px;">
+                                    <option value="anos">Anos</option>
+                                    <option value="meses">Meses</option>
+                                    <option value="dias">Dias</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Incidência de IR (%)</label>
+                            <input type="number" id="ir2" min="0" max="100">
+                        </div>
                     </div>
                 </div>
-                <div class="investimento">
-                    <h4>Investimento 2</h4>
-                    <div class="form-group">
-                        <label>Valor Investido (R$)</label>
-                        <input type="number" id="valor2">
-                    </div>
-                    <div class="form-group">
-                        <label>Taxa de Rentabilidade</label>
-                        <select id="tipoTaxa2" onchange="toggleCDI('comparar', 2)">
-                            <option value="fixa">Taxa Fixa (%)</option>
-                            <option value="cdi">CDI (%)</option>
-                        </select>
-                    </div>
-                    <div class="form-group" id="taxaGroup2">
-                        <label>Taxa (%)</label>
-                        <input type="number" id="taxa2">
-                    </div>
-                    <div class="form-group hidden" id="cdiGroup2">
-                        <label>CDI Atual (%)</label>
-                        <input type="number" id="cdiAtual2" disabled>
-                    </div>
-                    <div class="form-group hidden" id="rendimentoGroupCalcular2">
-                        <label>Percentual de Rendimento do CDI (%)</label>
-                        <input type="number" id="percentualRendimento2" name="percentualRendimento" placeholder="% Rendimento CDI" step="10">
-                    </div>
-                    <div class="form-group">
-                        <label>Tempo Investido (anos)</label>
-                        <input type="number" id="tempo2">
-                    </div>
-                    <div class="form-group">
-                        <label>Incidência de IR (%)</label>
-                        <input type="number" id="ir2">
-                    </div>
-                </div>
+                <button class="btn btn-success btn-comparar" onclick="compararRentabilidade()">Comparar</button>
+                <div id="resultadoComparacao" class="hidden"></div>
             </div>
-            <button class="btn btn-success btn-comparar" onclick="compararRentabilidade()">Comparar</button>
-            <div id="resultadoComparacao" class="hidden"></div>
         </div>
 
     </div>
 
-    <!-- Modal for Results -->
     <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg"> <!-- Use modal-lg for a larger modal -->
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="resultModalLabel">Resultado</h5>
-
                 </div>
                 <div class="modal-body" id="modalBody">
-                    <!-- Results will be inserted here -->
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p><strong>Montante Bruto:</strong> <span class="result-value">R$ ${data.montante_bruto.toFixed(2)}</span></p>
+                            <p><strong>Lucro Bruto:</strong> <span class="result-value">R$ ${data.lucro_bruto.toFixed(2)}</span></p>
+                            <p><strong>Imposto de Renda:</strong> <span class="result-value">R$ ${data.ir.toFixed(2)}</span></p>
+                            <p><strong>Montante Líquido:</strong> <span class="result-value">R$ ${data.montante_liquido.toFixed(2)}</span></p>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
