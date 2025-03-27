@@ -1,6 +1,14 @@
-//Função pra buscar o CDI atual pela API do BC.
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function() {
     fetchCDIAtual();
+    showSection('calcularSection');
+    
+    document.getElementById("btnCalcular").addEventListener("click", function() {
+        showSection("calcularSection");
+    });
+    
+    document.getElementById("btnComparar").addEventListener("click", function() {
+        showSection("compararSection");
+    });
 });
 
 function fetchCDIAtual() {
@@ -13,54 +21,27 @@ function fetchCDIAtual() {
             const valorCDI = parseFloat(ultimoCDI.valor);
 
             const cdiInput = document.getElementById('cdiAtual');
-            if (cdiInput) {
-                cdiInput.value = valorCDI.toFixed(2);
-            }
+            if (cdiInput) cdiInput.value = valorCDI.toFixed(2);
+            
             const cdiInput1 = document.getElementById('cdiAtual1');
-            if (cdiInput1) {
-                cdiInput1.value = valorCDI.toFixed(2);
-            }
+            if (cdiInput1) cdiInput1.value = valorCDI.toFixed(2);
+            
             const cdiInput2 = document.getElementById('cdiAtual2');
-            if (cdiInput2) {
-                cdiInput2.value = valorCDI.toFixed(2);
-            }
+            if (cdiInput2) cdiInput2.value = valorCDI.toFixed(2);
         })
         .catch(error => {
             console.error('Erro ao buscar CDI:', error);
         });
 }
 
-// Exibir a seção escolhida
-function showSection(section) {
-    document.getElementById("calcularSection").classList.add("hidden");
-    document.getElementById("compararSection").classList.add("hidden");
-    document.getElementById(section).classList.remove("hidden");
+function showSection(sectionId) {
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.add('hidden');
+    });
+    const sectionToShow = document.getElementById(sectionId);
+    if (sectionToShow) sectionToShow.classList.remove('hidden');
 }
 
-// Alternar entre taxa fixa e CDI
-/*function toggleCDI(section, index = null) {
-    let tipo;
-    let cdiGroup;
-    let taxaGroup;
-    let rendimentoGroup;
-
-    if (section === "calcular") {
-        tipo = document.getElementById("tipoTaxa").value;
-        cdiGroup = document.getElementById("cdiGroupCalcular");
-        taxaGroup = document.getElementById("taxaGroupCalcular");
-        rendimentoGroup = document.getElementById("rendimentoGroupCalcular");
-        
-
-    } else if (section === "comparar") {
-        tipo = document.getElementById(`tipoTaxa${index}`).value;
-        cdiGroup = document.getElementById(`cdiGroup${index}`);
-        taxaGroup = document.getElementById(`taxaGroup${index}`);
-        rendimentoGroup = document.getElementById(`rendimentoGroupCalcular${index}`);
-    }
-    cdiGroup.classList.toggle("hidden", tipo !== "cdi");
-    taxaGroup.classList.toggle("hidden", tipo !== "fixa")
-    rendimentoGroup.classList.toggle("hidden", tipo !== "cdi")
-}*/
 function toggleCDI(section, index = null) {
     let tipo, cdiGroup, taxaGroup, rendimentoGroup;
 
@@ -69,7 +50,7 @@ function toggleCDI(section, index = null) {
         cdiGroup = document.getElementById("cdiGroupCalcular");
         taxaGroup = document.getElementById("taxaGroupCalcular");
         rendimentoGroup = document.getElementById("rendimentoGroupCalcular");
-    } else if (section === "comparar") {
+    } else {
         tipo = document.getElementById(`tipoTaxa${index}`).value;
         cdiGroup = document.getElementById(`cdiGroup${index}`);
         taxaGroup = document.getElementById(`taxaGroup${index}`);
@@ -77,10 +58,9 @@ function toggleCDI(section, index = null) {
     }
 
     cdiGroup.classList.toggle("hidden", tipo !== "cdi");
-    taxaGroup.classList.toggle("hidden", tipo !== "fixa")
-    rendimentoGroup.classList.toggle("hidden", tipo !== "cdi")
+    taxaGroup.classList.toggle("hidden", tipo !== "fixa");
+    rendimentoGroup.classList.toggle("hidden", tipo !== "cdi");
 
-    // Habilitar/desabilitar campos conforme o tipo
     if (tipo === "cdi") {
         if (section === "calcular") {
             document.getElementById("percentualRendimento").disabled = false;
@@ -90,76 +70,40 @@ function toggleCDI(section, index = null) {
     }
 }
 
-// Calcular Rentabilidade
-/*function calcularRentabilidade() {
-    let valorInvestido = parseFloat(document.getElementById("valorInvestido").value);
-    let tipoTaxa = document.getElementById("tipoTaxa").value;
-    let taxa = parseFloat(document.getElementById("taxa").value);
-    let cdiAtual = tipoTaxa === "cdi" ? parseFloat(document.getElementById("cdiAtual").value) : null;
-    let tempo = parseFloat(document.getElementById("tempo").value);
-    let incidenciaIR = parseFloat(document.getElementById("ir").value);
-
-    fetch("http://127.0.0.1:5000/calcular", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ valor: valorInvestido, taxa: taxa, cdi: cdiAtual, tempo: tempo, ir: incidenciaIR })
-    })
-    .then(response => response.json())
-    .then(data => {
-        const modalBody = document.getElementById("modalBody");
-        modalBody.innerHTML = `
-            <div class="row">
-                <div class="col-md-12">
-                    <p><strong>Montante Bruto:</strong> R$ ${data.montante_bruto.toFixed(2)}</p>
-                    <p><strong>Lucro Bruto:</strong> R$ ${data.lucro_bruto.toFixed(2)}</p>
-                    <p><strong>Imposto de Renda:</strong> R$ ${data.ir.toFixed(2)}</p>
-                    <p><strong>Montante Líquido:</strong> R$ ${data.montante_liquido.toFixed(2)}</p>
-                </div>
-            </div>
-        `;
-        // Show the modal
-        const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
-        resultModal.show();
-    })
-    .catch(error => {
-        console.error("Erro ao calcular rentabilidade:", error);
-    });
-}*/
 function calcularRentabilidade() {
-    let valorInvestido = parseFloat(document.getElementById("valorInvestido").value);
-    let tipoTaxa = document.getElementById("tipoTaxa").value;
-    let taxa;
-    let cdiAtual = tipoTaxa === "cdi" ? parseFloat(document.getElementById("cdiAtual").value) : null;
-    let tempo = parseFloat(document.getElementById("tempo").value);
-    let incidenciaIR = parseFloat(document.getElementById("ir").value);
+    const valorInvestido = parseFloat(document.getElementById("valorInvestido").value) || 0;
+    const tipoTaxa = document.getElementById("tipoTaxa").value;
+    const tempo = parseFloat(document.getElementById("tempo").value) || 0;
+    const incidenciaIR = parseFloat(document.getElementById("ir").value) || 0;
+    
+    let requestData = {
+        valor: valorInvestido,
+        tempo: tempo,
+        ir: incidenciaIR
+    };
 
-    // Cálculo do rendimento real quando for CDI
     if (tipoTaxa === "cdi") {
-        let percentualRendimento = parseFloat(document.getElementById("percentualRendimento").value);
-        taxa = cdiAtual * (percentualRendimento / 100); // Calcula o percentual real sobre o CDI
+        const cdiAtual = parseFloat(document.getElementById("cdiAtual").value) || 0;
+        const percentualRendimento = parseFloat(document.getElementById("percentualRendimento").value) || 0;
+        requestData.cdi = cdiAtual;
+        requestData.percentual_rendimento = percentualRendimento;
     } else {
-        taxa = parseFloat(document.getElementById("taxa").value);
+        const taxa = parseFloat(document.getElementById("taxa").value) || 0;
+        requestData.taxa = taxa;
     }
 
     fetch("http://127.0.0.1:5000/calcular", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-            valor: valorInvestido, 
-            taxa: taxa,
-            cdi: cdiAtual, 
-            tempo: tempo, 
-            ir: incidenciaIR 
-        })
+        body: JSON.stringify(requestData)
     })
     .then(response => {
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json().then(err => { throw new Error(err.error || 'Erro desconhecido'); });
         }
         return response.json();
     })
     .then(data => {
-        console.log("Dados para o modal:", data);
         const modalBody = document.getElementById("modalBody");
         modalBody.innerHTML = `
             <div class="row">
@@ -171,56 +115,58 @@ function calcularRentabilidade() {
                 </div>
             </div>
         `;
-        
-        // Modificação importante aqui:
-        const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
-        resultModal.show();
+        new bootstrap.Modal(document.getElementById('resultModal')).show();
     })
     .catch(error => {
-        console.error("Erro completo:", error);
-        // Mostra o erro no modal mesmo com falha
         const modalBody = document.getElementById("modalBody");
         modalBody.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
-        const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
-        resultModal.show();
+        new bootstrap.Modal(document.getElementById('resultModal')).show();
     });
 }
 
-// Comparar Rentabilidade
 function compararRentabilidade() {
     let investimentos = [];
 
     for (let i = 1; i <= 2; i++) {
-        let tipoTaxa = document.getElementById(`tipoTaxa${i}`).value;
-        let taxa;
-        let cdiAtual = tipoTaxa === "cdi" ? parseFloat(document.getElementById(`cdiAtual${i}`).value) : null;
+        const tipoTaxa = document.getElementById(`tipoTaxa${i}`).value;
+        const valor = parseFloat(document.getElementById(`valor${i}`).value) || 0;
+        const tempo = parseFloat(document.getElementById(`tempo${i}`).value) || 0;
+        const ir = parseFloat(document.getElementById(`ir${i}`).value) || 0;
+        
+        let investimento = {
+            valor: valor,
+            tempo: tempo,
+            ir: ir
+        };
 
-        // Cálculo do rendimento real quando for CDI
         if (tipoTaxa === "cdi") {
-            let percentualRendimento = parseFloat(document.getElementById(`percentualRendimento${i}`).value);
-            taxa = cdiAtual * (percentualRendimento / 100);
+            const cdiAtual = parseFloat(document.getElementById(`cdiAtual${i}`).value) || 0;
+            const percentualRendimento = parseFloat(document.getElementById(`percentualRendimento${i}`).value) || 0;
+            investimento.cdi = cdiAtual;
+            investimento.percentual_rendimento = percentualRendimento;
         } else {
-            taxa = parseFloat(document.getElementById(`taxa${i}`).value);
+            const taxa = parseFloat(document.getElementById(`taxa${i}`).value) || 0;
+            investimento.taxa = taxa;
         }
 
-        investimentos.push({
-            valor: parseFloat(document.getElementById(`valor${i}`).value),
-            taxa: taxa,  // Já inclui o cálculo do percentual sobre o CDI
-            cdi: cdiAtual,
-            tempo: parseFloat(document.getElementById(`tempo${i}`).value),
-            ir: parseFloat(document.getElementById(`ir${i}`).value)
-        });
+        investimentos.push(investimento);
+    }
 
-        fetch("http://127.0.0.1:5000/comparar", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ investimentos })
-        })
-            .then(response => response.json())
-            .then(data => {
-                let resultado = `<div class="row">`;
-                data.resultados.forEach((invest, index) => {
-                    resultado += `
+    fetch("http://127.0.0.1:5000/comparar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ investimentos })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || 'Erro desconhecido'); });
+        }
+        return response.json();
+    })
+    .then(data => {
+        let resultado = `<div class="row">`;
+        data.resultados.forEach((invest, index) => {
+            resultado += `
                 <div class="col-md-6">
                     <h4>Investimento ${index + 1}</h4>
                     <p><strong>Montante Bruto:</strong> R$ ${invest.montante_bruto.toFixed(2)}</p>
@@ -229,25 +175,14 @@ function compararRentabilidade() {
                     <p><strong>Montante Líquido:</strong> R$ ${invest.montante_liquido.toFixed(2)}</p>
                 </div>
             `;
-                });
-                resultado += `</div>`;
-                const modalBody = document.getElementById("modalBody");
-                modalBody.innerHTML = resultado;
-                // Show the modal
-                const resultModal = new bootstrap.Modal(document.getElementById('resultModal'));
-                resultModal.show();
-            })
-            .catch(error => {
-                console.error("Erro ao comparar rentabilidades:", error);
-            });
-    }
+        });
+        resultado += `</div>`;
+        document.getElementById("modalBody").innerHTML = resultado;
+        new bootstrap.Modal(document.getElementById('resultModal')).show();
+    })
+    .catch(error => {
+        const modalBody = document.getElementById("modalBody");
+        modalBody.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
+        new bootstrap.Modal(document.getElementById('resultModal')).show();
+    });
 }
-
-// Event listeners para alternar entre as seções
-document.getElementById("btnCalcular").addEventListener("click", function () {
-    showSection("calcularSection");
-});
-
-document.getElementById("btnComparar").addEventListener("click", function () {
-    showSection("compararSection");
-});

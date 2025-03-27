@@ -1,52 +1,46 @@
-mbody {
+body {
     font-family: Arial, sans-serif;
-    background-color: beige;
-    margin: 0;
-    padding: 20px;
-}
-
-body{
     background-color: navy;
     color: olivedrab;
+    margin: 0;
+    padding: 0;
 }
 
-nav{
+nav {
     background-color: beige;
-    max-height: 100px;
-    margin-bottom: 15px;
-    padding: 10px;
-    justify-items: center;
+    padding: 15px 0;
+    margin-bottom: 20px;
 }
 
-
-.container {
-    max-width: 600px;
-    margin: auto;
-    background: beige;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-}
-
-.button-group {
+.navbar {
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
 }
 
-.button-group button:hover {
-    background: olive;
+.navbar-nav {
+    display: flex;
+    gap: 15px;
 }
 
-.content-section {
-    padding: 15px;
+.container {
+    max-width: 800px;
+    margin: 0 auto;
     background: beige;
-    border-radius: 5px;
-    margin-top: 10px;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .hidden {
-    display: none;
+    display: none !important;
+}
+
+.content-section {
+    padding: 20px;
+    background: beige;
+    border-radius: 5px;
+    margin-top: 15px;
 }
 
 .form-group {
@@ -64,49 +58,55 @@ input, select {
     padding: 8px;
     border: 1px solid olivedrab;
     border-radius: 4px;
+    box-sizing: border-box;
 }
 
 button {
-    width: 100%;
-    padding: 10px;
+    padding: 10px 20px;
     font-size: 16px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 10px;
-}
-.content-section{
-    background-color: beige;
+    transition: background-color 0.3s;
 }
 
 .btn-calcular, .btn-comparar {
     background: olivedrab;
+    color: white;
+    width: 100%;
+    margin-top: 10px;
 }
 
-#btnCalcular:hover, #btnComparar:hover, #btnSecondary:hover {
-    color: black;
+.btn-calcular:hover, .btn-comparar:hover {
+    background: #556b2f;
 }
 
-#btnComparar, #btnCalcular{
-    color: olivedrab;
+#btnCalcular, #btnComparar {
+    background-color: olivedrab;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 0 5px;
+    border-radius: 5px;
 }
 
+#btnCalcular:hover, #btnComparar:hover {
+    background-color: #556b2f;
+}
 
-
-/* Estilo para comparação */
 #investimentos {
     display: flex;
     justify-content: space-between;
-    gap: 10px;
+    gap: 20px;
 }
 
 .investimento {
     flex: 1;
-    padding: 10px;
+    padding: 15px;
     background: beige;
+    border-radius: 5px;
 }
 
-/* Custom Modal Styling */
 .modal-content {
     border-radius: 10px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
@@ -114,7 +114,7 @@ button {
 
 .modal-header {
     background-color: olivedrab;
-    color: beige;
+    color: white;
     border-top-left-radius: 10px;
     border-top-right-radius: 10px;
     justify-content: center;
@@ -133,21 +133,13 @@ button {
 }
 
 .modal-body .col-md-6 {
-    border-right: 1px solid #ccc;
+    padding: 15px;
+}
+
+.alert-danger {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
     padding: 10px;
-}
-
-.modal-body .col-md-6:last-child {
-    border-right: none;
-}
-
-.modal-footer {
-    border-bottom-left-radius: 10px;
-    border-bottom-right-radius: 10px;
-}
-
-
-.btn-secondary{
-    color: white;
-    background-color: olivedrab;
+    border-radius: 4px;
 }
