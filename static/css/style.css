@@ -114,16 +114,23 @@ nav {
 }
 
 .checkbox-container {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     margin: 0 10px 0 0;
+    justify-content: start;
+}
+
+input[type="checkbox"] {
+    width: 14px;
+    margin: 1px;
 }
 
 .checkbox-label {
     color: black;
-    margin-left: 5px;
-    width: 100px;
-}
+    margin: 5px;
+    margin-top: 2px;
+    width: auto;
+  }
 
 label {
     font-weight: 600;

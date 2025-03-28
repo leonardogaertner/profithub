@@ -31,7 +31,7 @@ Before running the application, ensure you have the following installed:
 1. Open a terminal or command prompt.
 2. Run the following command to clone the repository:
 
-```
+```git
 git clone https://github.com/leonardogaertner/profithub
 ```
 
@@ -43,14 +43,14 @@ cd profithub
 ## 2. Set Up the Project
 1. Install the required Python packages:
 
-```
+```Python
 pip install flask flask-cors
 ```
 This will install Flask (for the backend) and Flask-CORS (to handle cross-origin requests).
 
 2. Run the Main file:
 
-```
+```Python
 python main.py
 ```
 
@@ -79,7 +79,7 @@ Calculate the profitability of a single investment.
 
 #### Request Body:
 
-```
+```JSON
 {
   "valor": 1000,
   "taxa": 10,
@@ -91,7 +91,7 @@ Calculate the profitability of a single investment.
 
 #### Response:
 
-```
+```JSON
 {
   "montante_bruto": 1210.00,
   "montante_liquido": 1178.50,
@@ -103,7 +103,7 @@ Calculate the profitability of a single investment.
 
 #### Request Body:
 
-```
+```JSON
 {
   "investimentos": [
     {
@@ -124,7 +124,7 @@ Calculate the profitability of a single investment.
 ```
 #### Response:
 
-```
+```JSON
 {
   "resultados": [
     {

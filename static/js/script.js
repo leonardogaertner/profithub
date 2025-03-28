@@ -1,13 +1,15 @@
-document.addEventListener('DOMContentLoaded', function() {
+const { disabled } = require("express/lib/application");
+
+document.addEventListener('DOMContentLoaded', function () {
     fetchCDIAtual();
     showSection('calcularSection');
     prevenirValoresNegativos();
-    
-    document.getElementById("btnCalcular").addEventListener("click", function() {
+
+    document.getElementById("btnCalcular").addEventListener("click", function () {
         showSection("calcularSection");
     });
-    
-    document.getElementById("btnComparar").addEventListener("click", function() {
+
+    document.getElementById("btnComparar").addEventListener("click", function () {
         showSection("compararSection");
     });
 
@@ -16,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
         'valorInvestido', 'tipoTaxa', 'taxa', 'cdiAtual', 'percentualRendimento',
         'tempo', 'periodo', 'ir'
     ];
-    
+
     calcularInputs.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
@@ -24,19 +26,35 @@ document.addEventListener('DOMContentLoaded', function() {
             element.addEventListener('change', atualizarResultados);
         }
     });
+
+    // Verifica se o elemento existe antes de adicionar o listener
+    const isentoIR = document.getElementById("isentoIR");
+    if (isentoIR) {
+        isentoIR.addEventListener("change", function() {
+            const campoTaxaIR = document.getElementById("ir");
+            if (campoTaxaIR) {
+                campoTaxaIR.disabled = this.checked;
+                if (this.checked) {
+                    campoTaxaIR.value = "0";
+                }
+                atualizarResultados();
+            }
+        });
+    }
+
 });
 
 function prevenirValoresNegativos() {
     const inputsNumericos = document.querySelectorAll('input[type="number"]');
-    
+
     inputsNumericos.forEach(input => {
-        input.addEventListener('input', function(e) {
+        input.addEventListener('input', function (e) {
             if (this.value < 0) {
                 this.value = 0;
             }
         });
-        
-        input.addEventListener('change', function(e) {
+
+        input.addEventListener('change', function (e) {
             if (this.value < 0) {
                 this.value = 0;
             }
@@ -48,7 +66,7 @@ function fetchCDIAtual() {
     const url = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json';
 
     fetch(url)
-    
+
         .then(response => response.json())
         .then(data => {
             const ultimoCDI = data[data.length - 1];
@@ -56,13 +74,13 @@ function fetchCDIAtual() {
 
             const cdiInput = document.getElementById('cdiAtual');
             if (cdiInput) cdiInput.value = valorCDI.toFixed(2);
-            
+
             const cdiInput1 = document.getElementById('cdiAtual1');
             if (cdiInput1) cdiInput1.value = valorCDI.toFixed(2);
-            
+
             const cdiInput2 = document.getElementById('cdiAtual2');
             if (cdiInput2) cdiInput2.value = valorCDI.toFixed(2);
-            
+
             // Atualiza os resultados após buscar o CDI
             atualizarResultados();
         })
@@ -77,11 +95,11 @@ function atualizarResultados() {
     const tempo = parseFloat(document.getElementById("tempo").value) || 0;
     const periodo = document.getElementById("periodo").value;
     const incidenciaIR = parseFloat(document.getElementById("ir").value) || 0;
-    
+
     if (valorInvestido <= 0 || tempo <= 0) {
         return; // Não calcula se valores essenciais não foram informados
     }
-    
+
     // Converter o tempo para anos
     let tempoEmAnos = tempo;
     if (periodo === "meses") {
@@ -89,7 +107,7 @@ function atualizarResultados() {
     } else if (periodo === "dias") {
         tempoEmAnos = tempo / 365;
     }
-    
+
     let taxaAnual;
     if (tipoTaxa === "cdi") {
         const cdiAtual = parseFloat(document.getElementById("cdiAtual").value) || 0;
@@ -98,19 +116,19 @@ function atualizarResultados() {
     } else {
         taxaAnual = parseFloat(document.getElementById("taxa").value) || 0;
     }
-    
+
     // Cálculo do montante bruto (juros compostos)
     const montanteBruto = valorInvestido * Math.pow(1 + (taxaAnual / 100), tempoEmAnos);
     const lucroBruto = montanteBruto - valorInvestido;
-    
+
     // Cálculo do IR
     const ir = lucroBruto * (incidenciaIR / 100);
     const montanteLiquido = montanteBruto - ir;
     const lucroLiquido = montanteLiquido - valorInvestido;
-    
+
     // Cálculo da rentabilidade percentual
     const rentabilidade = ((montanteLiquido - valorInvestido) / valorInvestido) * 100;
-    
+
     // Atualiza a interface
     document.getElementById("resValorInvestido").textContent = `R$ ${valorInvestido.toFixed(2)}`;
     document.getElementById("resRendimentoBruto").textContent = `R$ ${lucroBruto.toFixed(2)}`;
@@ -126,6 +144,13 @@ function showSection(sectionId) {
     const sectionToShow = document.getElementById(sectionId);
     if (sectionToShow) sectionToShow.classList.remove('hidden');
 }
+
+//Habilitar/Desabilitar campo de IR
+/*document.getElementById("isentoIR").addEventListener("change", function() {
+    const campoTaxaIR = document.getElementById("ir");
+    campoTaxaIR.disabled = this.checked;
+    console.log("Checkbox status:", this.checked);
+});*/
 
 function toggleCDI(section, index = null) {
     let tipo, cdiGroup, taxaGroup, rendimentoGroup;
@@ -153,7 +178,7 @@ function toggleCDI(section, index = null) {
             document.getElementById(`percentualRendimento${index}`).disabled = false;
         }
     }
-    
+
     if (section === "calcular") {
         atualizarResultados();
     }
@@ -173,7 +198,7 @@ function compararRentabilidade() {
         const tempo = parseFloat(document.getElementById(`tempo${i}`).value) || 0;
         const periodo = document.getElementById(`periodo${i}`).value;
         const ir = parseFloat(document.getElementById(`ir${i}`).value) || 0;
-        
+
         // Converter o tempo para anos
         let tempoEmAnos = tempo;
         if (periodo === "meses") {
@@ -206,16 +231,16 @@ function compararRentabilidade() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ investimentos })
     })
-    .then(response => {
-        if (!response.ok) {
-            return response.json().then(err => { throw new Error(err.error || 'Erro desconhecido'); });
-        }
-        return response.json();
-    })
-    .then(data => {
-        let resultado = `<div class="row">`;
-        data.resultados.forEach((invest, index) => {
-            resultado += `
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { throw new Error(err.error || 'Erro desconhecido'); });
+            }
+            return response.json();
+        })
+        .then(data => {
+            let resultado = `<div class="row">`;
+            data.resultados.forEach((invest, index) => {
+                resultado += `
                 <div class="col-md-6">
                     <h4>Investimento ${index + 1}</h4>
                     <p><strong>Montante Bruto:</strong> R$ ${invest.montante_bruto.toFixed(2)}</p>
@@ -224,14 +249,14 @@ function compararRentabilidade() {
                     <p><strong>Montante Líquido:</strong> R$ ${invest.montante_liquido.toFixed(2)}</p>
                 </div>
             `;
+            });
+            resultado += `</div>`;
+            document.getElementById("modalBody").innerHTML = resultado;
+            new bootstrap.Modal(document.getElementById('resultModal')).show();
+        })
+        .catch(error => {
+            const modalBody = document.getElementById("modalBody");
+            modalBody.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
+            new bootstrap.Modal(document.getElementById('resultModal')).show();
         });
-        resultado += `</div>`;
-        document.getElementById("modalBody").innerHTML = resultado;
-        new bootstrap.Modal(document.getElementById('resultModal')).show();
-    })
-    .catch(error => {
-        const modalBody = document.getElementById("modalBody");
-        modalBody.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
-        new bootstrap.Modal(document.getElementById('resultModal')).show();
-    });
 }
