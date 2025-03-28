@@ -1,5 +1,3 @@
-const { disabled } = require("express/lib/application");
-
 document.addEventListener('DOMContentLoaded', function () {
     fetchCDIAtual();
     showSection('calcularSection');
@@ -28,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     // Verifica se o elemento existe antes de adicionar o listener
-    const isentoIR = document.getElementById("isentoIR");
+    /* const isentoIR = document.getElementById("isentoIR");
     if (isentoIR) {
         isentoIR.addEventListener("change", function() {
             const campoTaxaIR = document.getElementById("ir");
@@ -41,6 +39,43 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+    
+    const isentoIR1 = document.getElementById("isentoIR1");
+    if (isentoIR1) {
+        isentoIR1.addEventListener("change", function() {
+            const campoTaxaIR1 = document.getElementById("ir1");
+            if (campoTaxaIR1) {
+                campoTaxaIR1.disabled = this.checked;
+                if (this.checked) {
+                    campoTaxaIR.value = "0";
+                }
+                atualizarResultados();
+            }
+        });
+    } */
+
+    // Função genérica para lidar com a alteração
+    function configurarIsentoIR(isentoId, taxaId) {
+        const isentoElement = document.getElementById(isentoId);
+        if (isentoElement) {
+            isentoElement.addEventListener("change", function() {
+                const campoTaxaIR = document.getElementById(taxaId);
+                if (campoTaxaIR) {
+                    campoTaxaIR.disabled = this.checked;
+                    if (this.checked) {
+                        campoTaxaIR.value = "0";
+                    }
+                    atualizarResultados();  
+                }
+            });
+        }
+    }
+
+    // Configurar para os três casos
+    configurarIsentoIR("isentoIR", "ir");
+    configurarIsentoIR("isentoIR1", "ir1");
+    configurarIsentoIR("isentoIR2", "ir2");
+
 
 });
 
@@ -144,13 +179,6 @@ function showSection(sectionId) {
     const sectionToShow = document.getElementById(sectionId);
     if (sectionToShow) sectionToShow.classList.remove('hidden');
 }
-
-//Habilitar/Desabilitar campo de IR
-/*document.getElementById("isentoIR").addEventListener("change", function() {
-    const campoTaxaIR = document.getElementById("ir");
-    campoTaxaIR.disabled = this.checked;
-    console.log("Checkbox status:", this.checked);
-});*/
 
 function toggleCDI(section, index = null) {
     let tipo, cdiGroup, taxaGroup, rendimentoGroup;

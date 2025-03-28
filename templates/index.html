@@ -113,6 +113,7 @@
             <div class="form-section">
                 <h3 class="section-title">Dados do Investimento</h3>
                 <div id="investimentos">
+
                     <div class="investimento">
                         <h4>Investimento 1</h4>
                         <div class="form-group">
@@ -153,9 +154,18 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label>Incidência de IR (%)</label>
                             <input type="number" id="ir1" min="0" max="100">
+                        </div> -->
+
+                        <div class="form-group">
+                            <label>Incidência de IR (%)</label>
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="isentoIR" id="isentoIR1">
+                                <label for="isentoIR1" class="checkbox-label">Isento de imposto de renda</label>
+                            </div>
+                            <input type="number" id="ir1" placeholder="Digite a taxa de IR" min="0" max="100">
                         </div>
                     </div>
                     <div class="investimento">
@@ -196,9 +206,17 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label>Incidência de IR (%)</label>
                             <input type="number" id="ir2" min="0" max="100">
+                        </div> -->
+                        <div class="form-group">
+                            <label>Incidência de IR (%)</label>
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="isentoIR" id="isentoIR2">
+                                <label for="isentoIR2" class="checkbox-label">Isento de imposto de renda</label>
+                            </div>
+                            <input type="number" id="ir2" placeholder="Digite a taxa de IR" min="0" max="100">
                         </div>
                     </div>
                 </div>
