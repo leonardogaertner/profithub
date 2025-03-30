@@ -1,10 +1,17 @@
 from flask import Flask
 from flask_cors import CORS
 
-app = Flask(__name__)
-CORS(app)
+def create_app():
+    app = Flask(__name__)
+    CORS(app)
+    
+    # Import routes after app creation to avoid circular imports
+    from views import configure_routes
+    configure_routes(app)
+    
+    return app
 
-from views import *
+app = create_app()
 
 if __name__ == '__main__':
     app.run(debug=True)

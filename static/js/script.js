@@ -25,35 +25,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Verifica se o elemento existe antes de adicionar o listener
-    /* const isentoIR = document.getElementById("isentoIR");
-    if (isentoIR) {
-        isentoIR.addEventListener("change", function() {
-            const campoTaxaIR = document.getElementById("ir");
-            if (campoTaxaIR) {
-                campoTaxaIR.disabled = this.checked;
-                if (this.checked) {
-                    campoTaxaIR.value = "0";
-                }
-                atualizarResultados();
-            }
-        });
-    }
-    
-    const isentoIR1 = document.getElementById("isentoIR1");
-    if (isentoIR1) {
-        isentoIR1.addEventListener("change", function() {
-            const campoTaxaIR1 = document.getElementById("ir1");
-            if (campoTaxaIR1) {
-                campoTaxaIR1.disabled = this.checked;
-                if (this.checked) {
-                    campoTaxaIR.value = "0";
-                }
-                atualizarResultados();
-            }
-        });
-    } */
-
     // Função genérica para lidar com a alteração
     function configurarIsentoIR(isentoId, taxaId) {
         const isentoElement = document.getElementById(isentoId);
@@ -129,13 +100,13 @@ function atualizarResultados() {
     const tipoTaxa = document.getElementById("tipoTaxa").value;
     const tempo = parseFloat(document.getElementById("tempo").value) || 0;
     const periodo = document.getElementById("periodo").value;
-    const incidenciaIR = parseFloat(document.getElementById("ir").value) || 0;
+    const isentoIR = document.getElementById("isentoIR").checked;
+    const incidenciaIR = isentoIR ? 0 : (parseFloat(document.getElementById("ir").value) || 0);
 
     if (valorInvestido <= 0 || tempo <= 0) {
         return; // Não calcula se valores essenciais não foram informados
     }
 
-    // Converter o tempo para anos
     let tempoEmAnos = tempo;
     if (periodo === "meses") {
         tempoEmAnos = tempo / 12;
@@ -225,7 +196,8 @@ function compararRentabilidade() {
         const valor = parseFloat(document.getElementById(`valor${i}`).value) || 0;
         const tempo = parseFloat(document.getElementById(`tempo${i}`).value) || 0;
         const periodo = document.getElementById(`periodo${i}`).value;
-        const ir = parseFloat(document.getElementById(`ir${i}`).value) || 0;
+        const isentoIR = document.getElementById(`isentoIR${i}`).checked;
+        const ir = isentoIR ? 0 : (parseFloat(document.getElementById(`ir${i}`).value) || 0);
 
         // Converter o tempo para anos
         let tempoEmAnos = tempo;
@@ -287,4 +259,54 @@ function compararRentabilidade() {
             modalBody.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
             new bootstrap.Modal(document.getElementById('resultModal')).show();
         });
+}
+
+function exportarParaPDF() {
+    // Get the current comparison results
+    const resultados = [];
+    const modalBody = document.getElementById("modalBody");
+    
+    // Extract data from the modal (or use the last comparison data)
+    const investDivs = modalBody.querySelectorAll('.col-md-6');
+    
+    investDivs.forEach(div => {
+        const montanteBruto = parseFloat(div.querySelector('p:nth-child(2)').textContent.match(/\d+\.\d{2}/)[0]);
+        const lucroBruto = parseFloat(div.querySelector('p:nth-child(3)').textContent.match(/\d+\.\d{2}/)[0]);
+        const ir = parseFloat(div.querySelector('p:nth-child(4)').textContent.match(/\d+\.\d{2}/)[0]);
+        const montanteLiquido = parseFloat(div.querySelector('p:nth-child(5)').textContent.match(/\d+\.\d{2}/)[0]);
+        
+        resultados.push({
+            montante_bruto: montanteBruto,
+            lucro_bruto: lucroBruto,
+            ir: ir,
+            montante_liquido: montanteLiquido
+        });
+    });
+
+    // Send data to backend for PDF generation
+    fetch("http://127.0.0.1:5000/exportar_pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ resultados })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao gerar PDF');
+        }
+        return response.blob();
+    })
+    .then(blob => {
+        // Create download link
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'resultado_investimentos.pdf';
+        document.body.appendChild(a);
+        a.click();
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+    })
+    .catch(error => {
+        alert(`Erro ao exportar: ${error.message}`);
+    });
 }
