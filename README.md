@@ -48,6 +48,12 @@ pip install flask flask-cors
 ```
 This will install Flask (for the backend) and Flask-CORS (to handle cross-origin requests).
 
+```Python
+pip install reportlab
+```
+This will install reportlab for .pdf file exports.
+
+
 2. Run the Main file:
 
 ```Python
