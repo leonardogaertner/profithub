@@ -1,11 +1,31 @@
 from flask import request, jsonify, render_template
 from utils.calculations import calcular_rentabilidade
 from services.pdf_service import generate_pdf
+import requests
 
 def configure_routes(app):
     @app.route('/')
     def index():
         return render_template('index.html')
+
+    @app.route('/api/cdi', methods=['GET'])
+    def get_cdi():
+        try:
+            data_inicial = request.args.get('dataInicial')
+            data_final = request.args.get('dataFinal')
+            
+            if not data_inicial or not data_final:
+                return jsonify({"error": "Missing date parameters"}), 400
+                
+            url = f'https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json&dataInicial={data_inicial}&dataFinal={data_final}'
+            
+            response = requests.get(url)
+            if response.status_code != 200:
+                return jsonify({"error": f"API error: {response.status_code}"}), response.status_code
+                
+            return jsonify(response.json())
+        except Exception as e:
+            return jsonify({"error": f"Error fetching CDI data: {str(e)}"}), 500
 
     @app.route('/calcular', methods=['POST'])
     def calcular():

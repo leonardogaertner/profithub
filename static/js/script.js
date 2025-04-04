@@ -69,29 +69,76 @@ function prevenirValoresNegativos() {
 }
 
 function fetchCDIAtual() {
-    const url = 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.1178/dados?formato=json';
-
+    // Get current date and format it as DD/MM/YYYY
+    const today = new Date();
+    // Calculate last month's date correctly
+    const lastMonth = new Date(today);
+    lastMonth.setMonth(today.getMonth() - 1);
+    
+    // Format dates as DD/MM/YYYY for the API
+    const formatDate = (date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+    
+    const dataInicial = formatDate(lastMonth);
+    const dataFinal = formatDate(today);
+    
+    
+    // Use our backend proxy instead of direct API call
+    const url = `http://127.0.0.1:5000/api/cdi?dataInicial=${dataInicial}&dataFinal=${dataFinal}`;
+    
+    
     fetch(url)
-
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
         .then(data => {
-            const ultimoCDI = data[data.length - 1];
+            if (!data || data.length === 0) {
+                throw new Error('No CDI data available');
+            }
+            
+            // Sort data by date in descending order to get the most recent first
+            const sortedData = data.sort((a, b) => {
+                const dateA = new Date(a.data.split('/').reverse().join('-'));
+                const dateB = new Date(b.data.split('/').reverse().join('-'));
+                return dateB - dateA;
+            });
+
+            // Get the most recent CDI value
+            const ultimoCDI = sortedData[0];
             const valorCDI = parseFloat(ultimoCDI.valor);
+    
 
-            const cdiInput = document.getElementById('cdiAtual');
-            if (cdiInput) cdiInput.value = valorCDI.toFixed(2);
+            // Update all CDI input fields
+            const cdiInputs = ['cdiAtual', 'cdiAtual1', 'cdiAtual2'];
+            cdiInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.value = valorCDI.toFixed(2);
+                }
+            });
 
-            const cdiInput1 = document.getElementById('cdiAtual1');
-            if (cdiInput1) cdiInput1.value = valorCDI.toFixed(2);
-
-            const cdiInput2 = document.getElementById('cdiAtual2');
-            if (cdiInput2) cdiInput2.value = valorCDI.toFixed(2);
-
-            // Atualiza os resultados após buscar o CDI
+            // Update results after fetching CDI
             atualizarResultados();
         })
         .catch(error => {
             console.error('Erro ao buscar CDI:', error);
+            // Set a default CDI value in case of error
+            const defaultCDI = 13.65; // Current CDI rate as of April 2024
+            const cdiInputs = ['cdiAtual', 'cdiAtual1', 'cdiAtual2'];
+            cdiInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.value = defaultCDI.toFixed(2);
+                }
+            });
+            atualizarResultados();
         });
 }
 
