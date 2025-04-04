@@ -6,7 +6,7 @@ def create_app():
     CORS(app)
     
     # Import routes after app creation to avoid circular imports
-    from views import configure_routes
+    from routes.investment_routes import configure_routes
     configure_routes(app)
     
     return app
