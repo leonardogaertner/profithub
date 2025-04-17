@@ -356,49 +356,73 @@ function compararRentabilidade() {
 }
 
 function exportarParaPDF() {
-    const resultados = [];
-    const modalBody = document.getElementById("modalBody");
-    
-    const investDivs = modalBody.querySelectorAll('.col-md-6');
-    
-    investDivs.forEach(div => {
-        const irPercentual = parseFloat(div.querySelector('p:nth-child(1)').textContent.match(/\d+\.\d{2}/)[0]);
-        const montanteBruto = parseFloat(div.querySelector('p:nth-child(2)').textContent.match(/\d+\.\d{2}/)[0]);
-        const lucroBruto = parseFloat(div.querySelector('p:nth-child(3)').textContent.match(/\d+\.\d{2}/)[0]);
-        const ir = parseFloat(div.querySelector('p:nth-child(4)').textContent.match(/\d+\.\d{2}/)[0]);
-        const montanteLiquido = parseFloat(div.querySelector('p:nth-child(5)').textContent.match(/\d+\.\d{2}/)[0]);
+    try {
+        // Extrair dados dos resultados exibidos no modal
+        const modalBody = document.getElementById("modalBody");
+        const investDivs = modalBody.querySelectorAll('.col-md-6');
         
-        resultados.push({
-            ir_percentual: irPercentual,
-            montante_bruto: montanteBruto,
-            lucro_bruto: lucroBruto,
-            ir: ir,
-            montante_liquido: montanteLiquido
-        });
-    });
-
-    fetch("http://127.0.0.1:5000/exportar_pdf", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ resultados })
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Erro ao gerar PDF');
+        if (investDivs.length === 0) {
+            throw new Error("Nenhum dado disponível para exportação");
         }
-        return response.blob();
-    })
-    .then(blob => {
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'resultado_investimentos.pdf';
-        document.body.appendChild(a);
-        a.click();
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-    })
-    .catch(error => {
-        alert(`Erro ao exportar: ${error.message}`);
-    });
+
+        const resultados = [];
+        
+        investDivs.forEach(div => {
+            const texts = Array.from(div.querySelectorAll('p')).map(p => p.textContent);
+            
+            // Extrair os valores dos textos
+            const irPercentual = parseFloat(texts[0].match(/\d+\.\d{2}/)[0]);
+            const montanteBruto = parseFloat(texts[1].match(/\d+\.\d{2}/)[0]);
+            const lucroBruto = parseFloat(texts[2].match(/\d+\.\d{2}/)[0]);
+            const imposto = parseFloat(texts[3].match(/\d+\.\d{2}/)[0]);
+            const montanteLiquido = parseFloat(texts[4].match(/\d+\.\d{2}/)[0]);
+            
+            resultados.push({
+                ir_percentual: irPercentual,
+                montante_bruto: montanteBruto,
+                lucro_bruto: lucroBruto,
+                ir: imposto,
+                montante_liquido: montanteLiquido
+            });
+        });
+
+        // Enviar dados para o backend
+        fetch("http://127.0.0.1:5000/exportar_pdf", {
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json",
+                "Accept": "application/pdf"
+            },
+            body: JSON.stringify({ resultados })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => { 
+                    throw new Error(err.error || 'Erro ao gerar PDF'); 
+                });
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            // Criar link para download
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `resultado_investimentos_${new Date().toISOString().slice(0,10)}.pdf`;
+            document.body.appendChild(a);
+            a.click();
+            
+            // Limpar
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        })
+        .catch(error => {
+            console.error("Erro na exportação:", error);
+            alert(`Falha ao exportar PDF: ${error.message}`);
+        });
+
+    } catch (error) {
+        console.error("Erro ao processar dados para PDF:", error);
+        alert(`Erro: ${error.message}`);
+    }
 }
