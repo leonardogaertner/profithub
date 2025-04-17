@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     fetchCDIAtual();
     showSection('calcularSection');
     prevenirValoresNegativos();
+    configurarListenersIR();
 
     document.getElementById("btnCalcular").addEventListener("click", function () {
         showSection("calcularSection");
@@ -10,45 +11,175 @@ document.addEventListener('DOMContentLoaded', function () {
     document.getElementById("btnComparar").addEventListener("click", function () {
         showSection("compararSection");
     });
+});
 
-    // Adiciona listeners para os campos do formulário
-    const calcularInputs = [
-        'valorInvestido', 'tipoTaxa', 'taxa', 'cdiAtual', 'percentualRendimento',
-        'tempo', 'periodo', 'ir'
-    ];
-
+function configurarListenersIR() {
+    // Configuração para a seção de cálculo único
+    const calcularInputs = ['tempo', 'periodo', 'isentoIR', 'valorInvestido', 'tipoTaxa', 'taxa', 'cdiAtual', 'percentualRendimento'];
     calcularInputs.forEach(id => {
         const element = document.getElementById(id);
         if (element) {
-            element.addEventListener('input', atualizarResultados);
-            element.addEventListener('change', atualizarResultados);
+            element.addEventListener('input', atualizarIR);
+            element.addEventListener('change', atualizarIR);
         }
     });
+    document.getElementById('ir').readOnly = true;
 
-    // Função genérica para lidar com a alteração
-    function configurarIsentoIR(isentoId, taxaId) {
-        const isentoElement = document.getElementById(isentoId);
-        if (isentoElement) {
-            isentoElement.addEventListener("change", function() {
-                const campoTaxaIR = document.getElementById(taxaId);
-                if (campoTaxaIR) {
-                    campoTaxaIR.disabled = this.checked;
-                    if (this.checked) {
-                        campoTaxaIR.value = "0";
-                    }
-                    atualizarResultados();  
-                }
-            });
+    // Configuração para a seção de comparação
+    for (let i = 1; i <= 2; i++) {
+        const compararInputs = [`tempo${i}`, `periodo${i}`, `isentoIR${i}`, `valor${i}`, `tipoTaxa${i}`, `taxa${i}`, `cdiAtual${i}`, `percentualRendimento${i}`];
+        compararInputs.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', () => atualizarIRComparacao(i));
+                element.addEventListener('change', () => atualizarIRComparacao(i));
+            }
+        });
+        document.getElementById(`ir${i}`).readOnly = true;
+    }
+}
+
+function atualizarIR() {
+    const tempo = parseFloat(document.getElementById("tempo").value) || 0;
+    const periodo = document.getElementById("periodo").value;
+    const isentoIR = document.getElementById("isentoIR").checked;
+
+    if (tempo <= 0) return;
+
+    fetch("http://127.0.0.1:5000/calcular_ir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            tempo: tempo,
+            periodo: periodo,
+            isento_ir: isentoIR
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao calcular IR');
+        }
+        return response.json();
+    })
+    .then(data => {
+        document.getElementById("ir").value = data.ir_percentual.toFixed(2);
+        atualizarResultados();
+    })
+    .catch(error => {
+        console.error('Erro ao calcular IR:', error);
+        document.getElementById("ir").value = "0.00";
+    });
+}
+
+function atualizarIRComparacao(index) {
+    const tempo = parseFloat(document.getElementById(`tempo${index}`).value) || 0;
+    const periodo = document.getElementById(`periodo${index}`).value;
+    const isentoIR = document.getElementById(`isentoIR${index}`).checked;
+
+    if (tempo <= 0) return;
+
+    fetch("http://127.0.0.1:5000/calcular_ir", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            tempo: tempo,
+            periodo: periodo,
+            isento_ir: isentoIR
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Erro ao calcular IR');
+        }
+        return response.json();
+    })
+    .then(data => {
+        document.getElementById(`ir${index}`).value = data.ir_percentual.toFixed(2);
+    })
+    .catch(error => {
+        console.error('Erro ao calcular IR:', error);
+        document.getElementById(`ir${index}`).value = "0.00";
+    });
+}
+
+function showSection(sectionId) {
+    document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.add('hidden');
+    });
+    const sectionToShow = document.getElementById(sectionId);
+    if (sectionToShow) {
+        sectionToShow.classList.remove('hidden');
+        // Forçar atualização ao mudar de seção
+        if (sectionId === 'calcularSection') {
+            atualizarIR();
+        } else if (sectionId === 'compararSection') {
+            atualizarIRComparacao(1);
+            atualizarIRComparacao(2);
         }
     }
+}
 
-    // Configurar para os três casos
-    configurarIsentoIR("isentoIR", "ir");
-    configurarIsentoIR("isentoIR1", "ir1");
-    configurarIsentoIR("isentoIR2", "ir2");
+function fetchCDIAtual() {
+    const today = new Date();
+    const lastMonth = new Date(today);
+    lastMonth.setMonth(today.getMonth() - 1);
+    
+    const formatDate = (date) => {
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        return `${day}/${month}/${year}`;
+    };
+    
+    const dataInicial = formatDate(lastMonth);
+    const dataFinal = formatDate(today);
+    
+    const url = `http://127.0.0.1:5000/api/cdi?dataInicial=${dataInicial}&dataFinal=${dataFinal}`;
+    
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (!data || data.length === 0) {
+                throw new Error('No CDI data available');
+            }
+            
+            const sortedData = data.sort((a, b) => {
+                const dateA = new Date(a.data.split('/').reverse().join('-'));
+                const dateB = new Date(b.data.split('/').reverse().join('-'));
+                return dateB - dateA;
+            });
 
+            const ultimoCDI = sortedData[0];
+            const valorCDI = parseFloat(ultimoCDI.valor);
+    
+            const cdiInputs = ['cdiAtual', 'cdiAtual1', 'cdiAtual2'];
+            cdiInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.value = valorCDI.toFixed(2);
+                }
+            });
 
-});
+            atualizarResultados();
+        })
+        .catch(error => {
+            console.error('Erro ao buscar CDI:', error);
+            const defaultCDI = 13.65;
+            const cdiInputs = ['cdiAtual', 'cdiAtual1', 'cdiAtual2'];
+            cdiInputs.forEach(inputId => {
+                const input = document.getElementById(inputId);
+                if (input) {
+                    input.value = defaultCDI.toFixed(2);
+                }
+            });
+            atualizarResultados();
+        });
+}
 
 function prevenirValoresNegativos() {
     const inputsNumericos = document.querySelectorAll('input[type="number"]');
@@ -68,97 +199,22 @@ function prevenirValoresNegativos() {
     });
 }
 
-function fetchCDIAtual() {
-    // Get current date and format it as DD/MM/YYYY
-    const today = new Date();
-    // Calculate last month's date correctly
-    const lastMonth = new Date(today);
-    lastMonth.setMonth(today.getMonth() - 1);
-    
-    // Format dates as DD/MM/YYYY for the API
-    const formatDate = (date) => {
-        const day = String(date.getDate()).padStart(2, '0');
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
-        return `${day}/${month}/${year}`;
-    };
-    
-    const dataInicial = formatDate(lastMonth);
-    const dataFinal = formatDate(today);
-    
-    
-    // Use our backend proxy instead of direct API call
-    const url = `http://127.0.0.1:5000/api/cdi?dataInicial=${dataInicial}&dataFinal=${dataFinal}`;
-    
-    
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (!data || data.length === 0) {
-                throw new Error('No CDI data available');
-            }
-            
-            // Sort data by date in descending order to get the most recent first
-            const sortedData = data.sort((a, b) => {
-                const dateA = new Date(a.data.split('/').reverse().join('-'));
-                const dateB = new Date(b.data.split('/').reverse().join('-'));
-                return dateB - dateA;
-            });
-
-            // Get the most recent CDI value
-            const ultimoCDI = sortedData[0];
-            const valorCDI = parseFloat(ultimoCDI.valor);
-    
-
-            // Update all CDI input fields
-            const cdiInputs = ['cdiAtual', 'cdiAtual1', 'cdiAtual2'];
-            cdiInputs.forEach(inputId => {
-                const input = document.getElementById(inputId);
-                if (input) {
-                    input.value = valorCDI.toFixed(2);
-                }
-            });
-
-            // Update results after fetching CDI
-            atualizarResultados();
-        })
-        .catch(error => {
-            console.error('Erro ao buscar CDI:', error);
-            // Set a default CDI value in case of error
-            const defaultCDI = 13.65; // Current CDI rate as of April 2024
-            const cdiInputs = ['cdiAtual', 'cdiAtual1', 'cdiAtual2'];
-            cdiInputs.forEach(inputId => {
-                const input = document.getElementById(inputId);
-                if (input) {
-                    input.value = defaultCDI.toFixed(2);
-                }
-            });
-            atualizarResultados();
-        });
-}
-
 function atualizarResultados() {
     const valorInvestido = parseFloat(document.getElementById("valorInvestido").value) || 0;
     const tipoTaxa = document.getElementById("tipoTaxa").value;
     const tempo = parseFloat(document.getElementById("tempo").value) || 0;
     const periodo = document.getElementById("periodo").value;
-    const isentoIR = document.getElementById("isentoIR").checked;
-    const incidenciaIR = isentoIR ? 0 : (parseFloat(document.getElementById("ir").value) || 0);
+    const ir = parseFloat(document.getElementById("ir").value) || 0;
 
     if (valorInvestido <= 0 || tempo <= 0) {
-        return; // Não calcula se valores essenciais não foram informados
+        return;
     }
 
-    let tempoEmAnos = tempo;
+    let tempoAnos = tempo;
     if (periodo === "meses") {
-        tempoEmAnos = tempo / 12;
+        tempoAnos = tempo / 12;
     } else if (periodo === "dias") {
-        tempoEmAnos = tempo / 365;
+        tempoAnos = tempo / 365;
     }
 
     let taxaAnual;
@@ -170,32 +226,35 @@ function atualizarResultados() {
         taxaAnual = parseFloat(document.getElementById("taxa").value) || 0;
     }
 
-    // Cálculo do montante bruto (juros compostos)
-    const montanteBruto = valorInvestido * Math.pow(1 + (taxaAnual / 100), tempoEmAnos);
-    const lucroBruto = montanteBruto - valorInvestido;
-
-    // Cálculo do IR
-    const ir = lucroBruto * (incidenciaIR / 100);
-    const montanteLiquido = montanteBruto - ir;
-    const lucroLiquido = montanteLiquido - valorInvestido;
-
-    // Cálculo da rentabilidade percentual
-    const rentabilidade = ((montanteLiquido - valorInvestido) / valorInvestido) * 100;
-
-    // Atualiza a interface
-    document.getElementById("resValorInvestido").textContent = `R$ ${valorInvestido.toFixed(2)}`;
-    document.getElementById("resRendimentoBruto").textContent = `R$ ${lucroBruto.toFixed(2)}`;
-    document.getElementById("resRendimentoLiquido").textContent = `R$ ${lucroLiquido.toFixed(2)}`;
-    document.getElementById("resValorTotal").textContent = `R$ ${montanteLiquido.toFixed(2)}`;
-    document.getElementById("resRentabilidade").textContent = `${rentabilidade.toFixed(2)}%`;
-}
-
-function showSection(sectionId) {
-    document.querySelectorAll('.content-section').forEach(section => {
-        section.classList.add('hidden');
+    fetch("http://127.0.0.1:5000/calcular", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            valor: valorInvestido,
+            taxa: tipoTaxa === "fixa" ? taxaAnual : 0,
+            tempo: tempo,
+            periodo: periodo,
+            ir: ir,
+            cdi: tipoTaxa === "cdi" ? parseFloat(document.getElementById("cdiAtual").value) || 0 : null,
+            percentual_rendimento: tipoTaxa === "cdi" ? parseFloat(document.getElementById("percentualRendimento").value) || 0 : null
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || 'Erro desconhecido'); });
+        }
+        return response.json();
+    })
+    .then(data => {
+        document.getElementById("resValorInvestido").textContent = `R$ ${valorInvestido.toFixed(2)}`;
+        document.getElementById("resRendimentoBruto").textContent = `R$ ${data.lucro_bruto.toFixed(2)}`;
+        document.getElementById("resRendimentoLiquido").textContent = `R$ ${(data.montante_liquido - valorInvestido).toFixed(2)}`;
+        document.getElementById("resValorTotal").textContent = `R$ ${data.montante_liquido.toFixed(2)}`;
+        document.getElementById("resRentabilidade").textContent = `${((data.montante_liquido - valorInvestido) / valorInvestido * 100).toFixed(2)}%`;
+    })
+    .catch(error => {
+        console.error('Erro ao calcular:', error);
     });
-    const sectionToShow = document.getElementById(sectionId);
-    if (sectionToShow) sectionToShow.classList.remove('hidden');
 }
 
 function toggleCDI(section, index = null) {
@@ -230,11 +289,6 @@ function toggleCDI(section, index = null) {
     }
 }
 
-function calcularRentabilidade() {
-    // Esta função agora é redundante, mas mantida para compatibilidade
-    atualizarResultados();
-}
-
 function compararRentabilidade() {
     let investimentos = [];
 
@@ -243,20 +297,12 @@ function compararRentabilidade() {
         const valor = parseFloat(document.getElementById(`valor${i}`).value) || 0;
         const tempo = parseFloat(document.getElementById(`tempo${i}`).value) || 0;
         const periodo = document.getElementById(`periodo${i}`).value;
-        const isentoIR = document.getElementById(`isentoIR${i}`).checked;
-        const ir = isentoIR ? 0 : (parseFloat(document.getElementById(`ir${i}`).value) || 0);
-
-        // Converter o tempo para anos
-        let tempoEmAnos = tempo;
-        if (periodo === "meses") {
-            tempoEmAnos = tempo / 12;
-        } else if (periodo === "dias") {
-            tempoEmAnos = tempo / 365;
-        }
+        const ir = parseFloat(document.getElementById(`ir${i}`).value) || 0;
 
         let investimento = {
             valor: valor,
-            tempo: tempoEmAnos,
+            tempo: tempo,
+            periodo: periodo,
             ir: ir
         };
 
@@ -278,51 +324,52 @@ function compararRentabilidade() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ investimentos })
     })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => { throw new Error(err.error || 'Erro desconhecido'); });
-            }
-            return response.json();
-        })
-        .then(data => {
-            let resultado = `<div class="row">`;
-            data.resultados.forEach((invest, index) => {
-                resultado += `
-                <div class="col-md-6">
-                    <h4>Investimento ${index + 1}</h4>
-                    <p><strong>Montante Bruto:</strong> R$ ${invest.montante_bruto.toFixed(2)}</p>
-                    <p><strong>Lucro Bruto:</strong> R$ ${invest.lucro_bruto.toFixed(2)}</p>
-                    <p><strong>Imposto de Renda:</strong> R$ ${invest.ir.toFixed(2)}</p>
-                    <p><strong>Montante Líquido:</strong> R$ ${invest.montante_liquido.toFixed(2)}</p>
-                </div>
+    .then(response => {
+        if (!response.ok) {
+            return response.json().then(err => { throw new Error(err.error || 'Erro desconhecido'); });
+        }
+        return response.json();
+    })
+    .then(data => {
+        let resultado = `<div class="row">`;
+        data.resultados.forEach((invest, index) => {
+            resultado += `
+            <div class="col-md-6">
+                <h4>Investimento ${index + 1}</h4>
+                <p><strong>Alíquota IR:</strong> ${invest.ir_percentual.toFixed(2)}%</p>
+                <p><strong>Montante Bruto:</strong> R$ ${invest.montante_bruto.toFixed(2)}</p>
+                <p><strong>Lucro Bruto:</strong> R$ ${invest.lucro_bruto.toFixed(2)}</p>
+                <p><strong>Imposto de Renda:</strong> R$ ${invest.ir.toFixed(2)}</p>
+                <p><strong>Montante Líquido:</strong> R$ ${invest.montante_liquido.toFixed(2)}</p>
+            </div>
             `;
-            });
-            resultado += `</div>`;
-            document.getElementById("modalBody").innerHTML = resultado;
-            new bootstrap.Modal(document.getElementById('resultModal')).show();
-        })
-        .catch(error => {
-            const modalBody = document.getElementById("modalBody");
-            modalBody.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
-            new bootstrap.Modal(document.getElementById('resultModal')).show();
         });
+        resultado += `</div>`;
+        document.getElementById("modalBody").innerHTML = resultado;
+        new bootstrap.Modal(document.getElementById('resultModal')).show();
+    })
+    .catch(error => {
+        const modalBody = document.getElementById("modalBody");
+        modalBody.innerHTML = `<div class="alert alert-danger">Erro: ${error.message}</div>`;
+        new bootstrap.Modal(document.getElementById('resultModal')).show();
+    });
 }
 
 function exportarParaPDF() {
-    // Get the current comparison results
     const resultados = [];
     const modalBody = document.getElementById("modalBody");
     
-    // Extract data from the modal (or use the last comparison data)
     const investDivs = modalBody.querySelectorAll('.col-md-6');
     
     investDivs.forEach(div => {
+        const irPercentual = parseFloat(div.querySelector('p:nth-child(1)').textContent.match(/\d+\.\d{2}/)[0]);
         const montanteBruto = parseFloat(div.querySelector('p:nth-child(2)').textContent.match(/\d+\.\d{2}/)[0]);
         const lucroBruto = parseFloat(div.querySelector('p:nth-child(3)').textContent.match(/\d+\.\d{2}/)[0]);
         const ir = parseFloat(div.querySelector('p:nth-child(4)').textContent.match(/\d+\.\d{2}/)[0]);
         const montanteLiquido = parseFloat(div.querySelector('p:nth-child(5)').textContent.match(/\d+\.\d{2}/)[0]);
         
         resultados.push({
+            ir_percentual: irPercentual,
             montante_bruto: montanteBruto,
             lucro_bruto: lucroBruto,
             ir: ir,
@@ -330,7 +377,6 @@ function exportarParaPDF() {
         });
     });
 
-    // Send data to backend for PDF generation
     fetch("http://127.0.0.1:5000/exportar_pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -343,7 +389,6 @@ function exportarParaPDF() {
         return response.blob();
     })
     .then(blob => {
-        // Create download link
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;

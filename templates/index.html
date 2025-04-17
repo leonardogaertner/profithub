@@ -74,7 +74,7 @@
                                 <input type="checkbox" name="isentoIR" id="isentoIR">
                                 <label for="isentoIR" class="checkbox-label">Isento de imposto de renda</label>
                             </div>
-                            <input type="number" id="ir" placeholder="Digite a taxa de IR" min="0" max="100">
+                            <input type="number" id="ir" placeholder="Alíquota calculada automaticamente" min="0" max="100" readonly>
                         </div>
                     </div>
 
@@ -166,7 +166,7 @@
                                 <input type="checkbox" name="isentoIR" id="isentoIR1">
                                 <label for="isentoIR1" class="checkbox-label">Isento de imposto de renda</label>
                             </div>
-                            <input type="number" id="ir1" placeholder="Digite a taxa de IR" min="0" max="100">
+                            <input type="number" id="ir1" placeholder="Taxa de IR" min="0" max="100">
                         </div>
                     </div>
                     <div class="investimento">
@@ -217,7 +217,7 @@
                                 <input type="checkbox" name="isentoIR" id="isentoIR2">
                                 <label for="isentoIR2" class="checkbox-label">Isento de imposto de renda</label>
                             </div>
-                            <input type="number" id="ir2" placeholder="Digite a taxa de IR" min="0" max="100">
+                            <input type="number" id="ir2" placeholder="Taxa de IR" min="0" max="100">
                         </div>
                     </div>
                 </div>
@@ -237,14 +237,11 @@
                 <div class="modal-body" id="modalBody">
                     <div class="row">
                         <div class="col-md-12">
-                            <p><strong>Montante Bruto:</strong> <span class="result-value">R$
-                                    ${data.montante_bruto.toFixed(2)}</span></p>
-                            <p><strong>Lucro Bruto:</strong> <span class="result-value">R$
-                                    ${data.lucro_bruto.toFixed(2)}</span></p>
-                            <p><strong>Imposto de Renda:</strong> <span class="result-value">R$
-                                    ${data.ir.toFixed(2)}</span></p>
-                            <p><strong>Montante Líquido:</strong> <span class="result-value">R$
-                                    ${data.montante_liquido.toFixed(2)}</span></p>
+                            <p><strong>Alíquota IR:</strong> <span class="result-value">${data.ir_percentual.toFixed(2)}%</span></p>
+                            <p><strong>Montante Bruto:</strong> <span class="result-value">R$ ${data.montante_bruto.toFixed(2)}</span></p>
+                            <p><strong>Lucro Bruto:</strong> <span class="result-value">R$ ${data.lucro_bruto.toFixed(2)}</span></p>
+                            <p><strong>Imposto de Renda:</strong> <span class="result-value">R$ ${data.ir.toFixed(2)}</span></p>
+                            <p><strong>Montante Líquido:</strong> <span class="result-value">R$ ${data.montante_liquido.toFixed(2)}</span></p>
                         </div>
                     </div>
                 </div>
